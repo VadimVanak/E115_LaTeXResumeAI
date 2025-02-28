@@ -35,7 +35,7 @@ services:
     image: "sharelatex/sharelatex:5.3.1"
     container_name: sharelatex
     volumes:
-      - "/home/vadimvanak/overleaf_toolkit/data/overleaf:/var/lib/overleaf"
+      - "./data/overleaf:/var/lib/overleaf"
     ports:
       - "3000:80"
     environment:
@@ -63,7 +63,7 @@ services:
     command: ["mongod", "--replSet", "overleaf"]
     container_name: mongo
     volumes:
-      - "/home/vadimvanak/overleaf-toolkit/data/mongo:/data/db"
+      - "./data/mongo:/data/db"
     expose:
       - 27017
     healthcheck:
@@ -78,7 +78,7 @@ services:
     container_name: redis
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - "/home/vadimvanak/containers/data/redis:/data"
+      - "./data/redis:/data"
     expose:
       - 6379
 
