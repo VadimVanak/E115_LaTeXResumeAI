@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Editor</title>
+    
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/stex/stex.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        #editor-container {
+            width: 80%;
+            margin: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background: #f9f9f9;
+	    text-align: left;
+        }
+        #submit-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>LaTeX Code Editor</h2>
+
+    <div id="editor-container">
+        <textarea id="latex-editor"></textarea>
+    </div>
+
+    <button id="submit-btn">Submit LaTeX Code</button>
+
+    <script>
+        // Initialize CodeMirror
+        var editor = CodeMirror.fromTextArea(document.getElementById("latex-editor"), {
+            mode: "stex", // LaTeX mode
+            lineNumbers: true,
+            theme: "default"
+        });
+
+        // Set default LaTeX content
+        editor.setValue("\\documentclass{article}\n\\begin{document}\nHello, \\textbf{LaTeX} World!\n\\end{document}");
+
+        // Handle submit button click
+        document.getElementById("submit-btn").addEventListener("click", function() {
+            var latexCode = editor.getValue();
+            console.log("LaTeX Code Submitted:", latexCode);
+            alert("LaTeX Code Submitted! Check the console for output.");
+        });
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Editor with PDF Preview</title>
+    
+    <!-- CodeMirror Styles and Scripts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/stex/stex.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        #editor-container {
+            width: 80%;
+            margin: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background: #fff;
+	    text-align: left;
+        }
+        .CodeMirror {
+            height: 300px;
+            border: 1px solid #ddd;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #pdf-container {
+            margin-top: 20px;
+            width: 80%;
+            height: 500px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>LaTeX Editor with PDF Compilation</h1>
+
+    <!-- LaTeX Code Editor -->
+    <div id="editor-container">
+        <textarea id="latex-editor"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <button id="submit-btn">Generate PDF</button>
+
+    <br/>
+    <!-- PDF Viewer -->
+    <iframe id="pdf-container" hidden></iframe>
+
+    <script>
+        // Initialize CodeMirror LaTeX Editor
+        var editor = CodeMirror.fromTextArea(document.getElementById("latex-editor"), {
+            mode: "stex", // LaTeX mode
+            lineNumbers: true,
+            theme: "default"
+        });
+
+        // Set default LaTeX content
+        editor.setValue("\\documentclass{article}\n\\begin{document}\nHello, \\textbf{LaTeX} World!\n\\end{document}");
+
+        // Handle submit button click
+        document.getElementById("submit-btn").addEventListener("click", function() {
+            var latexCode = editor.getValue();
+
+            // Send LaTeX code to the server
+            fetch("https://cv.vanak.de/pdf/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ latex: latexCode })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to generate PDF");
+                }
+                return response.blob(); // Get the PDF as a Blob
+            })
+            .then(blob => {
+                var pdfUrl = URL.createObjectURL(blob);
+                var pdfViewer = document.getElementById("pdf-container");
+                pdfViewer.src = pdfUrl;
+                pdfViewer.hidden = false; // Show the PDF viewer
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to generate PDF. Check console for details.");
+            });
+        });
+    </script>
+
+</body>
+</html>
+
