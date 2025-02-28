@@ -26,6 +26,12 @@ services:
       context: ./pdf
       dockerfile: Dockerfile.pdf
     container_name: pdfgen
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Share Docker daemon
+      - /usr/bin/docker:/usr/bin/docker  # Optional: Allow direct CLI use
+      - "./data/overleaf:/var/lib/overleaf"  
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock        
     ports:
       - "4000:4000"
     restart: unless-stopped
