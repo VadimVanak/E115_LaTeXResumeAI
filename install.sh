@@ -30,7 +30,7 @@ sudo usermod -aG docker $USER
 if ! command -v certbot &> /dev/null
 then
     echo "Certbot not found. Installing..."
-    sudo apt update && sudo apt install -y certbot
+    sudo apt install -y certbot
 fi
 
 # Request DNS certificates
