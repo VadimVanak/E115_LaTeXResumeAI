@@ -1,4 +1,13 @@
-export DNS_NAME=cv1.vanak.de
+#!/bin/bash
+# Check if the first argument is provided
+if [ -z "$1" ]; then
+    echo "Error: Missing argument. Please provide a DNS name for your server."
+    echo "Usage: $0 <DNS_NAME>"
+    exit 1
+fi
+
+# Export the argument as DNS_NAME
+export DNS_NAME="$1"
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install ca-certificates curl
@@ -30,9 +39,9 @@ sudo certbot certonly --standalone \
     --register-unsafely-without-email \
     --agree-tos 
 	
-apt-get install git
-git clone https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/my_resume_ai
-
+sudo apt-get install git -y
+git clone https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
+cd /home/LaTeXResumeAI
 
 #TODO: update DNS name in docker project
 #TODO: run docker-compose
