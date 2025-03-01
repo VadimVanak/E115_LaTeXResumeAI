@@ -40,8 +40,7 @@ sudo certbot certonly --standalone \
     --agree-tos 
 	
 sudo apt-get install git -y
-git clone https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
-git checkout experimental 
+git clone -b experimental --single-branch  https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
 cd /home/LaTeXResumeAI/
 
 #TODO: update DNS name in docker project
