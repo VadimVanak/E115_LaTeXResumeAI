@@ -31,7 +31,8 @@ sudo certbot certonly --standalone \
     --agree-tos 
 	
 apt-get install git
-git clone https://github.com/VadimVanak/E115_LaTeXResumeAI.git
+git clone https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/my_resume_ai
+
 
 #TODO: update DNS name in docker project
 #TODO: run docker-compose
