@@ -10,8 +10,7 @@ services:
     volumes:
       - ./static:/usr/share/nginx/html
     restart: unless-stopped
-    depends_on:
-      - sharelatex
+
   latexai:
     build:
       context: ./latexAI
