@@ -2,43 +2,33 @@ services:
   nginx:
     build:
       context: ./nginx
-      dockerfile: Dockerfile.nginx
-    container_name: nginx-server
+    container_name: nginx
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - DNS_NAME=${DNS_NAME}
     volumes:
       - ./static:/usr/share/nginx/html
+      - /etc/letsencrypt:/etc/letsencrypt
     restart: unless-stopped
 
   latexai:
     build:
       context: ./latexAI
-      dockerfile: Dockerfile.AI
     container_name: latex-ai
     ports:
       - "5000:5000"
     restart: unless-stopped
 
-  pdfgenerator:
-    build:
-      context: ./pdf
-      dockerfile: Dockerfile.pdf
-    container_name: pdfgen
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Share Docker daemon
-      - /usr/bin/docker:/usr/bin/docker  # Optional: Allow direct CLI use
-      - "./data/overleaf:/var/lib/overleaf"  
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock        
+  latex-api:
+    build: 
+      context: ./latex-api
+    container_name: latex-server
     ports:
-      - "4000:4000"
-    restart: unless-stopped
-  latex:
-    image: texlive/texlive
+      - "4001:4001"
     volumes:
-      - ./documents:/workdir
-    working_dir: /workdir
-    entrypoint: ["pdflatex"]  
+      - /var/pdflatex:/workdir/output
+    restart: unless-stopped
 
 

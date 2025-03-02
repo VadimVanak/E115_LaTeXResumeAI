@@ -80,20 +80,20 @@
         });
 
         // Set default LaTeX content
-        editor.setValue("\\documentclass{article}\n\\begin{document}\nHello, \\textbf{LaTeX} World!\n\\end{document}");
+        editor.setValue("\\documentclass{article}\\begin{document}Hello, \\LaTeX!\\end{document}");
 
         // Handle submit button click
         document.getElementById("submit-btn").addEventListener("click", function() {
             var latexCode = editor.getValue();
 
             // Send LaTeX code to the server
-            fetch("https://cv.vanak.de/pdf/", {
+            fetch("./api/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ latex: latexCode })
-            })
+                body: JSON.stringify({ latex_code: latexCode })
+            })		    
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Failed to generate PDF");
