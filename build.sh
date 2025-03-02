@@ -5,5 +5,5 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-mkdir -p /var/pdflatex
-DNS_NAME="$1" docker compose -f ./docker-compose.yml up -d --build --remove-orphans
+sudo mkdir -p /var/pdflatex
+sudo DNS_NAME="$1" docker compose -f ./docker-compose.yml up -d --build --remove-orphans
