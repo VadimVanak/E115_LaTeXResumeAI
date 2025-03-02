@@ -40,7 +40,7 @@ sudo certbot certonly --standalone \
     --agree-tos 
 	
 sudo apt-get install git -y
-sudo git clone -b experimental --single-branch  https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
+sudo git clone -b main --single-branch  https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
 cd /home/LaTeXResumeAI/
 
 ./build.sh $DNS_NAME
