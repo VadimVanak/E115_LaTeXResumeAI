@@ -2,89 +2,33 @@ services:
   nginx:
     build:
       context: ./nginx
-      dockerfile: Dockerfile.nginx
-    container_name: nginx-server
+    container_name: nginx
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - DNS_NAME=${DNS_NAME}
     volumes:
       - ./static:/usr/share/nginx/html
+      - /etc/letsencrypt:/etc/letsencrypt
     restart: unless-stopped
-    depends_on:
-      - sharelatex
+
   latexai:
     build:
       context: ./latexAI
-      dockerfile: Dockerfile.AI
     container_name: latex-ai
     ports:
       - "5000:5000"
     restart: unless-stopped
 
-  pdfgenerator:
-    build:
-      context: ./pdf
-      dockerfile: Dockerfile.pdf
-    container_name: pdfgen
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Share Docker daemon
-      - /usr/bin/docker:/usr/bin/docker  # Optional: Allow direct CLI use
-      - "./data/overleaf:/var/lib/overleaf"  
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock        
+  latex-api:
+    build: 
+      context: ./latex-api
+    container_name: latex-server
     ports:
-      - "4000:4000"
+      - "4001:4001"
+    volumes:
+      - /var/pdflatex:/workdir/output
     restart: unless-stopped
 
-  sharelatex:
-    restart: always
-    image: "sharelatex/sharelatex:5.3.1"
-    container_name: sharelatex
-    volumes:
-      - "./data/overleaf:/var/lib/overleaf"
-    ports:
-      - "3000:80"
-    environment:
-      GIT_BRIDGE_ENABLED: "false"
-      REDIS_HOST: "redis"
-      REDIS_PORT: "6379"
-      V1_HISTORY_URL: "http://sharelatex:3100/api"
-      OVERLEAF_MONGO_URL: "mongodb://mongo/sharelatex"
-      OVERLEAF_REDIS_HOST: "redis"
-      ALLOW_ORIGIN: "https://cv.vanak.de"
-      ALLOW_CROSS_ORIGIN: "true"       
-    stop_grace_period: 60s
-    depends_on:
-      mongo:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    links:
-      - redis
-      - mongo
-
-  mongo:
-    restart: always
-    image: "mongo:6.0"
-    command: ["mongod", "--replSet", "overleaf"]
-    container_name: mongo
-    volumes:
-      - "./data/mongo:/data/db"
-    expose:
-      - 27017
-    healthcheck:
-      test: echo 'db.stats().ok' | mongosh localhost:27017/test --quiet
-      interval: 10s
-      timeout: 10s
-      retries: 5
-
-  redis:
-    restart: always
-    image: "redis:6.2"
-    container_name: redis
-    command: ["redis-server", "--appendonly", "yes"]
-    volumes:
-      - "./data/redis:/data"
-    expose:
-      - 6379
 

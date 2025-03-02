@@ -33,15 +33,14 @@ then
     sudo apt install -y certbot
 fi
 
-# Request DNS certificates
+# Request DNS certif:icates
 sudo certbot certonly --standalone \
     -d "$DNS_NAME" \
     --register-unsafely-without-email \
     --agree-tos 
 	
 sudo apt-get install git -y
-git clone https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
+git clone -b experimental --single-branch  https://github.com/VadimVanak/E115_LaTeXResumeAI.git /home/LaTeXResumeAI
 cd /home/LaTeXResumeAI/
 
-#TODO: update DNS name in docker project
-#TODO: run docker-compose
+./build.sh $DNS_NAME
