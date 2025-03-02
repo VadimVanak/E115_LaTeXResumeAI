@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LaTeX AI Generator</title>
-    
+
     <!-- CodeMirror Styles and Scripts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
@@ -21,15 +21,23 @@
         h1 {
             color: #333;
         }
-        #input-container {
-            margin-bottom: 10px;
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: left;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="text"] {
-            width: 60%;
+        textarea {
+            width: 100%;
+            height: 150px;
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            resize: vertical;
         }
         button {
             padding: 10px 20px;
@@ -39,23 +47,22 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #0056b3;
         }
-        #editor-container {
-            width: 80%;
-            margin: auto;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            background: #fff;
-	    text-align: left;
+        .output-container {
+            margin-top: 20px;
+        }
+        .output-container textarea {
+            background: #f0f0f0;
+            color: #333;
         }
         .CodeMirror {
             height: 300px;
             border: 1px solid #ddd;
-	    text-align: left;
+            text-align: left;
         }
     </style>
 </head>
@@ -63,15 +70,25 @@
 
     <h1>LaTeX AI Generator</h1>
 
-    <!-- Input Text Box -->
-    <div id="input-container">
-        <input type="text" id="user-input" placeholder="Generate me great LaTeX...">
-        <button onclick="submitText()">Generate LaTeX</button>
-    </div>
+    <div class="container">
+        <!-- Resume Input -->
+        <label for="user-input"><strong>Paste your resume</strong></label>
+        <textarea id="user-input" placeholder="Paste your resume here..."></textarea>
 
-    <!-- LaTeX Code Editor -->
-    <div id="editor-container">
-        <textarea id="latex-editor"></textarea>
+        <!-- Editable LaTeX Template -->
+        <div class="output-container">
+            <label for="latex-editor"><strong>Enter LaTeX template</strong></label>
+            <textarea id="latex-editor"></textarea>
+        </div>
+
+        <!-- Generate LaTeX Button (Moved Below Template) -->
+        <button onclick="submitText()">Generate LaTeX</button>
+
+        <!-- Read-Only LaTeX Output -->
+        <div class="output-container">
+            <label for="latex-output"><strong>Generated LaTeX Output:</strong></label>
+            <textarea id="latex-output" readonly></textarea>
+        </div>
     </div>
 
     <script>
@@ -94,19 +111,20 @@
         // Handle form submission
         function submitText() {
             var userInput = document.getElementById("user-input").value;
+            var latexCode = editor.getValue(); // Editable LaTeX input
 
             if (!userInput.trim()) {
-                alert("Please enter some text.");
+                alert("Please paste your resume.");
                 return;
             }
 
             // Send user input to the API
-            fetch("./ai/", {
+            fetch("./ai/build", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ input: userInput }) // Sending user input as JSON
+                body: JSON.stringify({ input_text: userInput, latex_code: latexCode })
             })
             .then(response => {
                 if (!response.ok) {
@@ -115,8 +133,8 @@
                 return response.text(); // Expecting LaTeX response as text
             })
             .then(data => {
-                initEditor(data);
-                console.log("Received LaTeX Code:", data);
+                document.getElementById("latex-output").value = data; // Set output to read-only field
+                console.log("Received LaTeX Output:", data);
             })
             .catch(error => {
                 console.error("Error:", error);
