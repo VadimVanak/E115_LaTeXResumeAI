@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX AI Generator</title>
+
+    <!-- CodeMirror Styles and Scripts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/stex/stex.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: left;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output-container {
+            margin-top: 20px;
+        }
+        .output-container textarea {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .CodeMirror {
+            height: 300px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>LaTeX AI Generator</h1>
+
+    <div class="container">
+        <label for="user-input"><strong>Paste instructions</strong></label>
+        <textarea id="user-input" placeholder="Enter instructions here..."></textarea>
+
+        <!-- Editable LaTeX Template -->
+        <div class="output-container">
+            <label for="latex-editor"><strong>Enter current LaTeX resume</strong></label>
+            <textarea id="latex-editor"></textarea>
+        </div>
+
+        <!-- Generate LaTeX Button (Moved Below Template) -->
+        <button onclick="submitText()">Generate LaTeX</button>
+
+        <!-- Read-Only LaTeX Output -->
+        <div class="output-container">
+            <label for="latex-output"><strong>Edited LaTeX Output:</strong></label>
+            <textarea id="latex-output" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        var editor;
+
+        // Initialize CodeMirror Editor
+        function initEditor(content = "") {
+            if (editor) {
+                editor.setValue(content);
+            } else {
+                editor = CodeMirror.fromTextArea(document.getElementById("latex-editor"), {
+                    mode: "stex", // LaTeX mode
+                    lineNumbers: true,
+                    theme: "default"
+                });
+                editor.setValue(content);
+            }
+        }
+
+        // Handle form submission
+        function submitText() {
+            var userInput = document.getElementById("user-input").value;
+            var latexCode = editor.getValue(); // Editable LaTeX input
+
+            if (!userInput.trim()) {
+                alert("Please paste your resume.");
+                return;
+            }
+
+            // Send user input to the API
+            fetch("./ai/command", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ command: userInput, latex_code: latexCode })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch LaTeX response");
+                }
+                return response.text(); // Expecting LaTeX response as text
+            })
+            .then(data => {
+                document.getElementById("latex-output").value = data; // Set output to read-only field
+                console.log("Received LaTeX Output:", data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to generate LaTeX. Check console for details.");
+            });
+        }
+
+        // Initialize empty editor on page load
+        initEditor();
+    </script>
+
+</body>
+</html>
