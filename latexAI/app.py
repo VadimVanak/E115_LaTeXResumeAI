@@ -1,5 +1,10 @@
-from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import subprocess
+import uuid
+import os
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -42,7 +47,19 @@ fixed_response = r"""
 \end{document}
 """
 
-@app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-async def return_fixed_response(path: str):
+class BuildRequest(BaseModel):
+    input_text: str
+    latex_code: str
+
+
+class EditRequest(BaseModel):
+    command: str
+    latex_code: str
+
+@app.post("/ai/build")
+async def return_fixed_response(request: BuildRequest):
     return PlainTextResponse(fixed_response, media_type="text/plain")
 
+@app.post("/ai/command")
+async def return_fixed_response(request: EditRequest):
+    return PlainTextResponse(fixed_response, media_type="text/plain")
